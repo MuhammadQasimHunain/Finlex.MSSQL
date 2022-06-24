@@ -17,10 +17,13 @@ namespace FinlexApp.DataLibrary.DataModel
         public double Price { get; set; }
         public double TotalPrice { get; set; }
 
+        public Order()
+        {
+
+        }
         public Order(string createdBy)
         {
             CreatedBy = createdBy;
         }
-
     }
 }

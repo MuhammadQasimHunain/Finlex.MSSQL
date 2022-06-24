@@ -1,4 +1,8 @@
+using Finlex.MSSQL.Data.Repository;
+using Finlex.MSSQL.Data.Seeders;
+using Finlex.MSSQL.Services;
 using FinlexApp.DataLibrary;
+using FinlexApp.DataLibrary.Repository;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -26,6 +30,15 @@ builder.Services.AddDbContext<DbOrderContext>(
         options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
     });
 
+builder.Services.AddTransient<OrderSeeder>();
+//Add Repository Pattern
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+
+
+//Add Services
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddMvc(option => option.EnableEndpointRouting = false)
     .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
@@ -36,6 +49,21 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+    SeedData(app);
+
+//Seed Data
+void SeedData(IHost app)
+{
+    var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
+
+    using (var scope = scopedFactory?.CreateScope())
+    {
+        var service = scope?.ServiceProvider.GetService<OrderSeeder>();
+        service?.Seed();
+    }
 }
 
 app.UseHttpsRedirection();

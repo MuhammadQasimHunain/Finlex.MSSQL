@@ -1,13 +1,8 @@
 ﻿using FinlexApp.DataLibrary.DataModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FinlexApp.DataLibrary.Repository
+namespace Finlex.MSSQL.Services
 {
-    public interface IOrderRepository
+    public interface IOrderService
     {
         /// <summary>
         /// Get Orders by email
@@ -35,6 +30,5 @@ namespace FinlexApp.DataLibrary.Repository
         /// <param name="orderNo"></param>
         /// <returns></returns>
         Order GetOrderByOrderNo(int orderNo);
-
     }
 }

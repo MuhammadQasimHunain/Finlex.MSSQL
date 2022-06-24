@@ -1,3 +1,5 @@
+using Finlex.MSSQL.Services;
+using FinlexApp.DataLibrary.DataModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finlex_App.Controllers
@@ -6,22 +8,43 @@ namespace Finlex_App.Controllers
     [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
+        public IOrderService OrderService { get; set; }
+        private readonly ILogger<OrdersController> Logger;
+        public OrdersController(IOrderService orderService, ILogger<OrdersController> logger)
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        private readonly ILogger<OrdersController> _logger;
-
-        public OrdersController(ILogger<OrdersController> logger)
-        {
-            _logger = logger;
+            this.OrderService = orderService;
+            this.Logger = logger;
         }
 
-        [HttpGet(Name = "GetOrders")]
-        public IEnumerable<string> Get()
+
+        [Route("GetOrders")]
+        [HttpGet]
+        public IEnumerable<Order> GetOrders()
         {
-            return Summaries.ToArray();
+            return OrderService.GetAllOrders();
         }
+
+
+        [Route("PutPostOrder")]
+        [HttpPost]
+        public bool PutPostOrder([FromBody] Order order)
+        {
+            return OrderService.PutPostOrder(order);
+        }
+
+        [Route("GetOrdersByPersonalEmail")]
+        [HttpGet]
+        public IEnumerable<Order> GetOrdersByPersonalEmail(string email)
+        {
+            return OrderService.GetOrdersByPersonalEmail(email);
+        }
+
+        [Route("GetOrderByOrderNo")]
+        [HttpGet]
+        public Order GetOrderByOrderNo(int orderNo)
+        {
+            return OrderService.GetOrderByOrderNo(orderNo);
+        }
+
     }
 }

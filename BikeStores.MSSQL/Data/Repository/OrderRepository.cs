@@ -9,19 +9,54 @@ namespace FinlexApp.DataLibrary.Repository
 {
     public class OrderRepository : IOrderRepository
     {
-        public List<Person> GetAllPersons()
+        private readonly DbOrderContext DbOrderContext;
+
+        public OrderRepository(DbOrderContext dbOrderContext)
         {
-            throw new NotImplementedException();
+            this.DbOrderContext = dbOrderContext;
+        }
+        public List<Order> GetAllOrders()
+        {
+            return DbOrderContext.Orders.ToList();
+        }
+
+        public Order GetOrderByOrderNo(int orderNo)
+        {
+            return DbOrderContext.Orders.Where(d => d.OrderNo == orderNo).FirstOrDefault();
         }
 
         public List<Order> GetOrdersByPersonalEmail(string email)
         {
-            throw new NotImplementedException();
+            return DbOrderContext.Orders.Where(d => d.CreatedBy.Equals(email)).ToList();
         }
 
-        public Order PostOrder(Order order)
+        public bool PutPostOrder(Order order)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var result = DbOrderContext.Orders.SingleOrDefault(b => b.OrderNo == order.OrderNo);
+                if (result != null)
+                {
+                    result.ProductName = order.ProductName;
+                    result.OrderDate = order.OrderDate;
+                    result.CreatedBy = order.CreatedBy;
+                    result.OrderDate = order.OrderDate;
+                    result.Price = order.Price;
+                    result.TotalPrice = order.TotalPrice;
+                    DbOrderContext.SaveChanges();
+                }
+                else
+                {
+                    DbOrderContext.Orders.Add(order);
+                    DbOrderContext.SaveChanges();
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
+
     }
 }
