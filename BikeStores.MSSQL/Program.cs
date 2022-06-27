@@ -6,17 +6,8 @@ using FinlexApp.DataLibrary.Repository;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      builder =>
-                      {
-                          builder.WithOrigins("http://127.0.0.1.com");
-                      });
-});
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -73,7 +64,10 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors(MyAllowSpecificOrigins);
+app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
 app.MapControllers();
 
